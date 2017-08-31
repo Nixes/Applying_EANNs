@@ -25,6 +25,15 @@ public class CameraMovement : MonoBehaviour
     [SerializeField]
     private float UserInputSpeed = 50f;
     // Whether the camera can be controlled by user input, to be set in Unity Editor.
+
+    // min and max zoom levels
+    private float minOrtho = 1.0f;
+    private float maxOrtho = 200.0f;
+
+    private float zoomSpeed = 10.0f;
+
+    public float targetOrtho;
+
     [SerializeField]
     private bool AllowUserInput;
 
@@ -57,6 +66,10 @@ public class CameraMovement : MonoBehaviour
     // Unity method for updating the simulation
 	void FixedUpdate ()
     {
+        // hit space to toggle user controlled camera
+        if (Input.GetKeyDown(KeyCode.Space))
+            AllowUserInput = !AllowUserInput;
+
         //Check movement direction
         if (AllowUserInput)
             CheckUserInput();
@@ -118,6 +131,24 @@ public class CameraMovement : MonoBehaviour
 
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
+
+        // check plus/minus keys for time rate
+        if (Input.GetKeyDown(KeyCode.PageUp))
+            Time.timeScale = Time.timeScale + 0.5f;
+
+        if (Input.GetKeyDown(KeyCode.PageDown))
+            Time.timeScale = Time.timeScale - 0.5f;
+
+        // create a target zoom level
+        targetOrtho = Camera.main.orthographicSize;
+        // check scroll wheel
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll != 0.0f) {
+            targetOrtho -= scroll * UserInputSpeed;
+            targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
+        }
+        // set it
+        Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, targetOrtho, zoomSpeed * Time.deltaTime);
 
         targetCamPos += new Vector3(horizontalInput * UserInputSpeed * Time.deltaTime, verticalInput * UserInputSpeed * Time.deltaTime);
     }
