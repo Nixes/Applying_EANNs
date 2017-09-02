@@ -40,7 +40,9 @@ public class UISimulationController : MonoBehaviour
     private Text Evaluation;
     [SerializeField]
     private Text GenerationCount;
-    [SerializeField]
+	[SerializeField]
+	private Text TimeScale;
+	[SerializeField]
     private UINeuralNetworkPanel NeuralNetPanel;
     #endregion
 
@@ -66,7 +68,8 @@ public class UISimulationController : MonoBehaviour
             //Display evaluation and generation count
             Evaluation.text = Target.Agent.Genotype.Evaluation.ToString();
             GenerationCount.text = EvolutionManager.Instance.GenerationCount.ToString();
-        }
+			TimeScale.text = Time.timeScale.ToString();
+		}
     }
 
     /// <summary>
